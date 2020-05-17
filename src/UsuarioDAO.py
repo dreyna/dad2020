@@ -11,10 +11,9 @@ class Usuario:
     estado = ""
     def readAll(self):
         try:
-            sql = "select * from USUARIO"
             conexion=cx.conecta()
             cursor = conexion.cursor(pymysql.cursors.DictCursor)
-            cursor.execute(sql)
+            cursor.callproc('listar_usuario')
             rows = cursor.fetchall()
             return rows
         except Exception as e:
@@ -23,7 +22,56 @@ class Usuario:
             conexion.close()
     def delete(self):
         try:
-            sql = ""
-            conexion = cx.conecta();
-            cursor = conexion.cursor()
-            cursor.execute("")
+            conexion=cx.conecta()
+            cursor=conexion.cursor(pymysql.cursors.DictCursor)
+            cursor.callproc('delete_usuario',[self.idusuario])
+            conexion.commit()
+            return 1
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conexion.close()
+    def agregarusuario(self):
+        nomuser=self.nomuser
+        clave=self.clave
+        data=[nomuser,clave]
+        try:
+            conexion=cx.conecta()
+            cursor=conexion.cursor(pymysql.cursors.DictCursor)
+            cursor.callproc("create_usuario",data)
+            conexion.commit()
+            return 1
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conexion.close()
+    def buscarusuario(self):
+        try:
+            conexion=cx.conecta()
+            cursor=conexion.cursor(pymysql.cursors.DictCursor)
+            cursor.callproc('read_usuario',[self.idusuario,])
+            rows=cursor.fetchall()
+            return rows
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conexion.close()
+    def modificarusuario(self):
+        try:
+            idu=self.idusuario
+            nomuser=self.nomuser
+            clave=self.clave
+            data=[idu,nomuser,clave]
+            conexion=cx.conecta()
+            cursor=conexion.cursor(pymysql.cursors.DictCursor)
+            cursor.callproc("update_usuario",data)
+            conexion.commit()
+            return 1
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conexion.close()
